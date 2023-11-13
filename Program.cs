@@ -20,16 +20,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
+//app.UseHttpsRedirection();
+//app.UseAuthentication();
 
 app.MapGet("/", () => "Landing page");
-app.MapPost("/newToDo/{todoContent}", async (DbContext db, string todoString) => {
-    ToDoItem todo = new ToDoItem();
-    todo.Content = todoString;
-    todo.IsComplete = false;
+app.MapGet("/ToDo", async (ToDoContext db) => await db.ToDoItems.ToListAsync());
 
-    db.Add(todo);
+app.MapPost("/new", async (ToDoContext db, ToDoItem todo) => {
+    
+    db.ToDoItems.Add(todo);
     await db.SaveChangesAsync();
 });
 
