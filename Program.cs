@@ -24,5 +24,13 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.MapGet("/", () => "Landing page");
+app.MapPost("/newToDo/{todoContent}", async (DbContext db, string todoString) => {
+    ToDoItem todo = new ToDoItem();
+    todo.Content = todoString;
+    todo.IsComplete = false;
+
+    db.Add(todo);
+    await db.SaveChangesAsync();
+});
 
 app.Run();

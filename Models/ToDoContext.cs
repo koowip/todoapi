@@ -9,5 +9,10 @@ public class ToDoContext : DbContext
 
   }
 
-  public DbSet<ToDoItem> ToDoItems {get;set;} = null!;
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<ToDoItem>().Property(t => t.Id).ValueGeneratedOnAdd();
+    }
+
+    public DbSet<ToDoItem> ToDoItems {get;set;} = null!;
 }
