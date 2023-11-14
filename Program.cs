@@ -23,13 +23,35 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 //app.UseAuthentication();
 
-app.MapGet("/", () => "Landing page");
-app.MapGet("/ToDo", async (ToDoContext db) => await db.ToDoItems.ToListAsync());
 
-app.MapPost("/new", async (ToDoContext db, ToDoItem todo) => {
-    
+app.MapGet("/", () => "Landing page");
+app.MapGet("/allToDo", async (ToDoContext db) => await db.ToDoItems.ToListAsync());
+app.MapGet("/toDo/{id}", async (ToDoContext db, long id) => {
+    var todo = await db.ToDoItems.FindAsync(id);
+    return todo;
+});
+app.MapPost("/new", async (ToDoContext db, ToDoItem todo) => { 
     db.ToDoItems.Add(todo);
     await db.SaveChangesAsync();
+});
+
+app.MapPut("/edit", async (ToDoContext db, ToDoItem todonew) => {
+    var todo = await db.ToDoItems.FindAsync(todonew.Id);
+    if (todo != null) 
+    {
+        todo.Content = todonew.Content;
+        todo.IsComplete = todonew.IsComplete;
+        await db.SaveChangesAsync();
+    }
+});
+
+app.MapDelete("/del/{id}", async (ToDoContext db, long id) => {
+    var todo = await db.ToDoItems.FindAsync(id);
+    if (todo != null) 
+    {
+        db.Remove(todo);
+        await db.SaveChangesAsync();
+    }
 });
 
 app.Run();
