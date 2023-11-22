@@ -2,9 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using todoapi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddCors();
 // Add services to the container.
 builder.Services.AddDbContext<ToDoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
+
 
 //API documentation 
 builder.Services.AddEndpointsApiExplorer();
@@ -13,6 +14,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors(x => x
+   .AllowAnyMethod()
+   .AllowAnyHeader()
+   .SetIsOriginAllowed(origin => true) // allow any origin
+   .AllowCredentials()); // allow credentials
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -22,7 +28,6 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 //app.UseAuthentication();
-
 
 app.MapGet("/", () => "Landing page");
 app.MapGet("/allToDo", async (ToDoContext db) => await db.ToDoItems.ToListAsync());
